@@ -39,6 +39,14 @@ let package = Package(
         ),
         .testTarget(
             name: "CucumberishTests",
-            dependencies: ["Cucumberish"]),
+            dependencies: ["Cucumberish"],
+            resources: [
+                .copy("Features")
+            ],
+            cSettings: [
+                .headerSearchPath("../../Sources/Cucumberish/Core/Managers"),
+                .headerSearchPath("../../Sources/Cucumberish/Core/Models"),
+            ]
+        ),
     ]
 )

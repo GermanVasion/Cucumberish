@@ -61,6 +61,59 @@ And follow the rest for the setup steps:
 ](https://github.com/Ahmed-Ali/Cucumberish/wiki/Setup-Cucumberish-with-Cocoapods-(Objective-C))
 - [Setup Cucumberish with Cocoapods (Swift)](https://github.com/Ahmed-Ali/Cucumberish/wiki/Setup-Cucumberish-with-Cocoapods-(Swift))
 
+# Install with Swift Package Manager
+
+In Xcode, go to **File → Add Package Dependencies** and enter the repository URL. Then add `Cucumberish` to your **UI Test** or **Unit Test** target (not the app target).
+
+### Setup for Swift test targets
+
+1. **Add a bridging header** to your test target (e.g. `MyAppUITests-Bridging-Header.h`):
+
+```objc
+#import <Cucumberish/Cucumberish.h>
+```
+
+Set the **Objective-C Bridging Header** build setting in your test target to point to this file.
+
+2. **Add a `Features` folder** to your test target and create `.feature` files inside it. Mark the folder as a resource in your target's *Copy Bundle Resources* build phase.
+
+3. **Create a `CucumberishInitializer.swift`** file in your test target:
+
+```swift
+import Foundation
+import Cucumberish
+
+@objc public class CucumberishInitializer: NSObject {
+    @objc public class func cucumberishSwiftInit() {
+        beforeStart {
+            // Register your step definition objects here, e.g.:
+            // MySteps().registerSteps()
+        }
+        let bundle = Bundle(for: CucumberishInitializer.self)
+        Cucumberish.executeFeatures(inDirectory: "Features", from: bundle, includeTags: nil, excludeTags: nil)
+    }
+}
+```
+
+4. **Create a `CucumberishInit.m`** Objective-C file in your test target to call the Swift initializer:
+
+```objc
+#import "MyAppUITests-Swift.h"
+
+void CucumberishInit(void);
+
+__attribute__((constructor))
+void CucumberishInit() {
+    [CucumberishInitializer cucumberishSwiftInit];
+}
+```
+
+5. Run tests with **CMD+U**.
+
+### Setup for Objective-C test targets
+
+Follow the same steps, but define your steps and call `[Cucumberish executeFeaturesInDirectory:...]` directly inside the `__attribute__((constructor))` function — no bridging header needed.
+
 # Install with Carthage
 - [Install with Carthage for Objective C](https://github.com/Ahmed-Ali/Cucumberish/wiki/Install-with-Carthage-for-Objective-C) test targets
 - [Install with Carthage for Swift](https://github.com/Ahmed-Ali/Cucumberish/wiki/Install-with-Carthage-for-Swift) test targets
